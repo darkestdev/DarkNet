@@ -14,7 +14,7 @@ function Client.new(ServiceName: string, ReplicationData: { [string]: string })
 end
 
 function Client:GetServiceMethods(Middleware: table | nil)
-	local Methods = {}
+	local Methods: { [string]: table | () -> table } = {}
 
 	for MethodKey, MethodType in pairs(self.ReplicationData) do
 		local Bridge: table = BridgeNet2.ClientBridge(`{self.ServiceName}_{MethodKey}`)
