@@ -1,18 +1,23 @@
-local BridgeNet2: table = require(script.Parent.Parent.BridgeNet2)
+local Types: nil = require(script.Parent.Types)
+local BridgeNet2: Types.TableType = require(script.Parent.Parent.BridgeNet2)
 
-local Signal: table = {}
+local Signal: Types.TableType = {}
 Signal.__index = Signal
 
 function Signal.new(Bridge: table)
-	local self: table = setmetatable({}, Signal)
+	local self: Types.TableType = setmetatable({}, Signal)
 
 	self.Bridge = Bridge
 
-	return self :: table
+	return self :: Types.TableType
 end
 
-function Signal:Fire(Player: Player, ...: any)
-	self.Bridge:Fire(Player, table.pack(...))
+function Signal:Fire(Player: Player | { Player }, ...: any)
+	if typeof(Player) == "table" then
+		self.Bridge:Fire(BridgeNet2.Players(Player), table.pack(...))
+	else
+		self.Bridge:Fire(Player, table.pack(...))
+	end
 end
 
 function Signal:FireAll(...: any)

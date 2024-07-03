@@ -1,16 +1,17 @@
-local Signal: table = {}
+local Types: nil = require(script.Parent.Types)
+local Signal: Types.TableType = {}
 Signal.__index = Signal
 
-function Signal.new(Bridge: table)
-	local self: table = setmetatable({}, Signal)
+function Signal.new(Bridge: Types.TableType)
+	local self: Types.TableType = setmetatable({}, Signal)
 
 	self.Bridge = Bridge
 
-	return self :: table
+	return self :: Types.TableType
 end
 
 function Signal:Connect(Func: (...any) -> ())
-	return self.Bridge:Connect(function(Content: table)
+	return self.Bridge:Connect(function(Content: Types.TableType)
 		return Func(table.unpack(Content))
 	end)
 end

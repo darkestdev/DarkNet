@@ -1,23 +1,24 @@
-local BridgeNet2: table = require(script.Parent.Parent.BridgeNet2)
-local ServerSignal: table = require(script.Parent.ClientSignal)
+local Types: nil = require(script.Parent.Types)
+local BridgeNet2: Types.TableType = require(script.Parent.Parent.BridgeNet2)
+local ServerSignal: Types.TableType = require(script.Parent.ClientSignal)
 
-local Client: table = {}
+local Client: Types.TableType = {}
 Client.__index = Client
 
 function Client.new(ServiceName: string, ReplicationData: { [string]: string })
-	local self: table = setmetatable({}, Client)
+	local self: Types.TableType = setmetatable({}, Client)
 
 	self.ServiceName = ServiceName
 	self.ReplicationData = ReplicationData
 
-	return self :: table
+	return self :: Types.TableType
 end
 
 function Client:GetServiceMethods(Middleware: table | nil)
-	local Methods: { [string]: table | () -> table } = {}
+	local Methods: { [string]: Types.TableType | () -> Types.TableType } = {}
 
 	for MethodKey, MethodType in pairs(self.ReplicationData) do
-		local Bridge: table = BridgeNet2.ClientBridge(`{self.ServiceName}_{MethodKey}`)
+		local Bridge: Types.TableType = BridgeNet2.ClientBridge(`{self.ServiceName}_{MethodKey}`)
 
 		if Middleware.Inbound then
 			Bridge:InboundMiddleware(Middleware.Inbound)
