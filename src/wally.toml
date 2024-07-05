@@ -1,6 +1,7 @@
 [package]
 name = "darkestdev/darkocomm"
-version = "0.1.0"
+description = "A BridgeNet2-based implementation similar to sleitnick's Comm, designed to replace it for Knit."
+version = "1.0.2"
 license = "MIT"
 registry = "https://github.com/UpliftGames/wally-index"
 realm = "shared"

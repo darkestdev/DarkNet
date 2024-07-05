@@ -4,36 +4,49 @@ local BridgeNet2: Types.TableType = require(script.Parent.Parent.BridgeNet2)
 local Signal: Types.TableType = {}
 Signal.__index = Signal
 
-function Signal.new(Bridge: table)
+function Signal.new(Bridge: table, Calls: Types.TableType)
 	local self: Types.TableType = setmetatable({}, Signal)
 
 	self.Bridge = Bridge
+	self.Calls = Calls
 
 	return self :: Types.TableType
 end
 
 function Signal:Fire(Player: Player | { Player }, ...: any)
+	local PackedArgs: Types.TableType = table.pack(...)
+	PackedArgs.n = nil
+	self.Calls += 1
 	if typeof(Player) == "table" then
-		self.Bridge:Fire(BridgeNet2.Players(Player), table.pack(...))
+		self.Bridge:Fire(BridgeNet2.Players(Player), PackedArgs)
 	else
-		self.Bridge:Fire(Player, table.pack(...))
+		self.Bridge:Fire(Player, PackedArgs)
 	end
 end
 
 function Signal:FireAll(...: any)
-	self.Bridge:Fire(BridgeNet2.AllPlayers(), table.pack(...))
+	local PackedArgs: Types.TableType = table.pack(...)
+	PackedArgs.n = nil
+	self.Calls += 1
+	self.Bridge:Fire(BridgeNet2.AllPlayers(), PackedArgs)
 end
 
 function Signal:FireFilter(Predicate: (Player, ...any) -> boolean, ...: any)
+	local PackedArgs: Types.TableType = table.pack(...)
+	PackedArgs.n = nil
+	self.Calls += 1
 	for _, Player in game:GetService("Players"):GetPlayers() do
 		if Predicate(Player, ...) then
-			self.Bridge:Fire(Player, table.pack(...))
+			self.Bridge:Fire(Player, PackedArgs)
 		end
 	end
 end
 
 function Signal:FireExcept(ExceptionList: { Player }, ...: any)
-	self.Bridge:Fire(BridgeNet2.PlayersExcept(ExceptionList), table.pack(...))
+	local PackedArgs: Types.TableType = table.pack(...)
+	PackedArgs.n = nil
+	self.Calls += 1
+	self.Bridge:Fire(BridgeNet2.PlayersExcept(ExceptionList), PackedArgs)
 end
 
 function Signal:Destroy()

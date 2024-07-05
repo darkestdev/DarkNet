@@ -10,6 +10,7 @@ function Server.new(ServiceName: string)
 
 	self.ServiceName = ServiceName
 	self.ReplicationData = {}
+	self.Calls = {}
 
 	return self :: Types.TableType
 end
@@ -25,11 +26,17 @@ function Server:WrapMethod(Table: Types.TableType, Name: string, InboundMiddlewa
 		Bridge:OutboundMiddleware(OutboundMiddleware)
 	end
 
+	self.ReplicationData[Name] = "Method"
+	self.Calls[Name] = 0
+
 	Bridge.OnServerInvoke = function(Player: Player, Content: Types.TableType)
-		return Table[Name](Table, Player, table.unpack(Content))
+		print(`[DarkoKnit] [OnServerInvoke] [{self.ServiceName}] [{Name}]:`)
+		print(Content)
+		self.Calls[Name] += 1
+		return table.pack(Table[Name](Table, Player, table.unpack(Content)))
 	end
 
-	self.ReplicationData[Name] = "Method"
+	return Bridge
 end
 
 function Server:ConstructSignal(Name: string, InboundMiddleware: any, OutboundMiddleware: any)
@@ -44,8 +51,9 @@ function Server:ConstructSignal(Name: string, InboundMiddleware: any, OutboundMi
 	end
 
 	self.ReplicationData[Name] = "Signal"
+	self.Calls[Name] = 0
 
-	return ServerSignal.new(Bridge)
+	return ServerSignal.new(Bridge, self.Calls[Name])
 end
 
 return Server
